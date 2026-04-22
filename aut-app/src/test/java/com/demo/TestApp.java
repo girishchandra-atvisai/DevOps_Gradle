@@ -3,6 +3,7 @@ package com.demo;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -13,7 +14,15 @@ public class TestApp {
     @BeforeAll
     void setup() {
         WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--window-size=1920,1080");
+
+        driver = new ChromeDriver(options);
     }
 
     @AfterAll
@@ -22,63 +31,27 @@ public class TestApp {
     }
 
     @Test
-    void testLogin() throws Exception {
-
-        driver.get("http://localhost:8080");
-        Thread.sleep(2000);
-
-        driver.findElement(By.id("user")).sendKeys("admin");
-        driver.findElement(By.id("pass")).sendKeys("1234");
-        driver.findElement(By.xpath("//button[contains(text(),'Login')]")).click();
-
-        Thread.sleep(2000);
-
-        Assertions.assertTrue(driver.getPageSource().contains("Issue Tracker"));
+    void testLogin() {
+        driver.get("http://localhost:8080/login");
+        driver.findElement(By.id("username")).sendKeys("admin");
+        driver.findElement(By.id("password")).sendKeys("admin");
+        driver.findElement(By.id("submit")).click();
+        Assertions.assertTrue(driver.getTitle().contains("Dashboard"));
     }
 
     @Test
-    void testAddTicket() throws Exception {
-
-        driver.get("http://localhost:8080");
-        Thread.sleep(2000);
-
-        // Login
-        driver.findElement(By.id("user")).sendKeys("admin");
-        driver.findElement(By.id("pass")).sendKeys("1234");
-        driver.findElement(By.xpath("//button[contains(text(),'Login')]")).click();
-
-        Thread.sleep(2000);
-
-        // Add Ticket
-        driver.findElement(By.xpath("//button[contains(text(),'Add Ticket')]")).click();
-        Thread.sleep(1000);
-
-        driver.findElement(By.id("ticket")).sendKeys("JUnit Ticket");
-        driver.findElement(By.xpath("//button[contains(text(),'Submit')]")).click();
-
-        Thread.sleep(2000);
-
-        Assertions.assertTrue(driver.getPageSource().contains("Added to DB"));
+    void testAddTicket() {
+        driver.get("http://localhost:8080/addTicket");
+        driver.findElement(By.id("title")).sendKeys("Test Ticket");
+        driver.findElement(By.id("description")).sendKeys("This is a test ticket");
+        driver.findElement(By.id("submit")).click();
+        Assertions.assertTrue(driver.getPageSource().contains("Ticket added successfully"));
     }
 
     @Test
-    void testViewTickets() throws Exception {
-
-        driver.get("http://localhost:8080");
-        Thread.sleep(2000);
-
-        // Login
-        driver.findElement(By.id("user")).sendKeys("admin");
-        driver.findElement(By.id("pass")).sendKeys("1234");
-        driver.findElement(By.xpath("//button[contains(text(),'Login')]")).click();
-
-        Thread.sleep(2000);
-
-        // View Tickets
-        driver.findElement(By.xpath("//button[contains(text(),'View Tickets')]")).click();
-
-        Thread.sleep(2000);
-
-        Assertions.assertTrue(driver.getPageSource().contains("["));
+    void testViewTickets() {
+        driver.get("http://localhost:8080/tickets");
+        Assertions.assertTrue(driver.getPageSource().contains("Test Ticket"));
     }
+
 }
