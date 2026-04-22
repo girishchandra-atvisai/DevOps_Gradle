@@ -12,7 +12,7 @@ application {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -31,11 +31,11 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.12'
     runtimeOnly 'org.slf4j:slf4j-simple:2.0.12'
 
-    // Selenium - used by TestApp.java
-    testImplementation 'org.seleniumhq.selenium:selenium-java:4.18.1'
+    // Selenium - updated to support Chrome 147
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.31.0'
 
-    // WebDriverManager - used by TestApp.java
-    testImplementation 'io.github.bonigarcia:webdrivermanager:5.7.0'
+    // WebDriverManager - updated to latest
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.9.3'
 
     // JUnit 5 - used by TestApp.java
     testImplementation platform('org.junit:junit-bom:5.10.0')
@@ -43,6 +43,13 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
 }
