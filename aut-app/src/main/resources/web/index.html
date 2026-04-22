@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginPage">
+  <h2>Login</h2>
+
+  <input id="user" placeholder="Username"><br><br>
+  <input id="pass" type="password" placeholder="Password"><br><br>
+
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- APP SCREEN -->
+<div id="appPage" style="display:none;">
+  <h2>Issue Tracker</h2>
+
+  <button onclick="showAdd()">Add Ticket</button>
+  <button onclick="showView()">View Tickets</button>
+
+  <div id="content"></div>
+</div>
+
+<script>
+
+// 🔐 Login
+function login(){
+  let u = document.getElementById("user").value;
+  let p = document.getElementById("pass").value;
+
+  if(u === "admin" && p === "1234"){
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("appPage").style.display = "block";
+  } else {
+    alert("Invalid login");
+  }
+}
+
+// ➕ Show Add Ticket UI
+function showAdd(){
+  document.getElementById("content").innerHTML = `
+    <input id="ticket" placeholder="Enter issue">
+    <button onclick="add()">Submit</button>
+  `;
+}
+
+// ➕ Add Ticket
+function add(){
+  let val = document.getElementById("ticket").value;
+
+  fetch("http://localhost:8080/add", {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" },
+    body: val
+  })
+  .then(r => r.text())
+  .then(d => {
+    document.getElementById("content").innerHTML = "<p>" + d + "</p>";
+  });
+}
+
+// 📄 Show Tickets UI
+function showView(){
+  fetch("http://localhost:8080/tickets")
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("content").innerHTML =
+      "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+  });
+}
+
+</script>
+
+</body>
+</html>

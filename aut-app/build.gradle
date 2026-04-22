@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.demo'
+version = '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'com.demo.Server'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // MySQL JDBC driver
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
+    // Jackson - used by Server.java
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
+
+    // SLF4J - used by Server.java
+    implementation 'org.slf4j:slf4j-api:2.0.12'
+    runtimeOnly 'org.slf4j:slf4j-simple:2.0.12'
+
+    // Selenium - used by TestApp.java
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.18.1'
+
+    // WebDriverManager - used by TestApp.java
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.7.0'
+
+    // JUnit 5 - used by TestApp.java
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
